@@ -1,0 +1,28 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/tifawinkitchen
+    username: postgres
+    password: Sana@sana
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+
+  # Maximum file size for uploads
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+
+server:
+  port: 8080
+
+# JWT Configuration
+jwt:
+  secret: 95970d23eefb32d28222ffe66afd2ad244a0fa32067773c8dc98089b79d7920dc6c1ee591e87dab86901fdfaa716cc1c3247ac9f434ea482e6871d3badfd76c1
+  expiration: 86400000 # 24 hours in milliseconds

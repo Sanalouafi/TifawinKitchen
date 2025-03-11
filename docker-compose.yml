@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:latest
+    container_name: tifawinkitchen_db
+    environment:
+      POSTGRES_DB: tifawinkitchen
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: Sana@sana
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: tifawinkitchen_app
+    depends_on:
+      - db
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/tifawinkitchen
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: Sana@sana
+    ports:
+      - "8080:8080"
+    volumes:
+      - .:/app
+
+volumes:
+  postgres_data:

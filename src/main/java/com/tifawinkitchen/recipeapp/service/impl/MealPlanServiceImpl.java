@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -126,5 +127,38 @@ public class MealPlanServiceImpl implements MealPlanService {
                 .orElseThrow(() -> new ResourceNotFoundException("MealPlan", "id", planId));
 
         mealPlanRepository.delete(mealPlan);
+    }
+    @Override
+    @Transactional
+    public void addRecipesToMealPlan(Long planId, List<Long> recipeIds, Long userId) throws ResourceNotFoundException {
+        MealPlan mealPlan = mealPlanRepository.findByIdAndUserId(planId, userId)
+                .orElseThrow(() -> new ResourceNotFoundException("MealPlan", "id", planId));
+
+        List<Recipe> recipes = recipeRepository.findAllById(recipeIds);
+        if (recipes.size() != recipeIds.size()) {
+            throw new ResourceNotFoundException("One or more recipes not found");
+        }
+
+        Set<Recipe> existingRecipes = new HashSet<>(mealPlan.getRecipes());
+        recipes.stream()
+                .filter(recipe -> !existingRecipes.contains(recipe))
+                .forEach(mealPlan.getRecipes()::add);
+
+        mealPlanRepository.save(mealPlan);
+    }
+
+    @Override
+    @Transactional
+    public void removeRecipesFromMealPlan(Long planId, List<Long> recipeIds, Long userId) throws ResourceNotFoundException {
+        MealPlan mealPlan = mealPlanRepository.findByIdAndUserId(planId, userId)
+                .orElseThrow(() -> new ResourceNotFoundException("MealPlan", "id", planId));
+
+        mealPlan.setRecipes(
+                mealPlan.getRecipes().stream()
+                        .filter(recipe -> !recipeIds.contains(recipe.getId()))
+                        .collect(Collectors.toList())
+        );
+
+        mealPlanRepository.save(mealPlan);
     }
 }

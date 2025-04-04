@@ -47,4 +47,21 @@ public class MealPlanController {
         mealPlanService.deleteMealPlan(planId, userId);
         return ResponseEntity.noContent().build();
     }
+    @PostMapping("/{planId}/recipes")
+    public ResponseEntity<Void> addRecipesToMealPlan(
+            @PathVariable Long planId,
+            @RequestBody List<Long> recipeIds,
+            @RequestParam Long userId) {
+        mealPlanService.addRecipesToMealPlan(planId, recipeIds, userId);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/{planId}/recipes")
+    public ResponseEntity<Void> removeRecipesFromMealPlan(
+            @PathVariable Long planId,
+            @RequestBody List<Long> recipeIds,
+            @RequestParam Long userId) {
+        mealPlanService.removeRecipesFromMealPlan(planId, recipeIds, userId);
+        return ResponseEntity.noContent().build();
+    }
 }

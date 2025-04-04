@@ -178,4 +178,83 @@ public class ShoppingListServiceImpl implements ShoppingListService {
 
         shoppingListRepository.delete(shoppingList);
     }
+    @Override
+    @Transactional
+    public ShoppingListDto addItemToShoppingList(Long listId, IngredientQuantityDto itemDto, Long userId)
+            throws ResourceNotFoundException {
+        validateShoppingListItem(itemDto);
+
+        ShoppingList shoppingList = shoppingListRepository.findByIdAndUserId(listId, userId)
+                .orElseThrow(() -> new ResourceNotFoundException("ShoppingList", "id", listId));
+
+        Ingredient ingredient = ingredientRepository.findById(itemDto.getIngredientId())
+                .orElseThrow(() -> new ResourceNotFoundException("Ingredient", "id", itemDto.getIngredientId()));
+
+        ShoppingListItem item = new ShoppingListItem();
+        item.setShoppingList(shoppingList);
+        item.setIngredient(ingredient);
+        item.setQuantity(itemDto.getQuantity());
+        item.setUnit(itemDto.getUnit());
+
+        shoppingList.getItems().add(item);
+        shoppingList.setUpdatedAt(LocalDateTime.now());
+
+        ShoppingList updatedList = shoppingListRepository.save(shoppingList);
+        return mapperUtil.mapShoppingListToDto(updatedList);
+    }
+
+    @Override
+    @Transactional
+    public ShoppingListDto removeItemFromShoppingList(Long listId, Long itemId, Long userId)
+            throws ResourceNotFoundException {
+        ShoppingList shoppingList = shoppingListRepository.findByIdAndUserId(listId, userId)
+                .orElseThrow(() -> new ResourceNotFoundException("ShoppingList", "id", listId));
+
+        boolean removed = shoppingList.getItems().removeIf(item -> item.getId().equals(itemId));
+        if (!removed) {
+            throw new ResourceNotFoundException("ShoppingListItem", "id", itemId);
+        }
+
+        shoppingList.setUpdatedAt(LocalDateTime.now());
+        ShoppingList updatedList = shoppingListRepository.save(shoppingList);
+        return mapperUtil.mapShoppingListToDto(updatedList);
+    }
+
+    @Override
+    @Transactional
+    public ShoppingListDto updateShoppingListItem(Long listId, Long itemId, IngredientQuantityDto itemDto, Long userId)
+            throws ResourceNotFoundException {
+        validateShoppingListItem(itemDto);
+
+        ShoppingList shoppingList = shoppingListRepository.findByIdAndUserId(listId, userId)
+                .orElseThrow(() -> new ResourceNotFoundException("ShoppingList", "id", listId));
+
+        ShoppingListItem item = shoppingList.getItems().stream()
+                .filter(i -> i.getId().equals(itemId))
+                .findFirst()
+                .orElseThrow(() -> new ResourceNotFoundException("ShoppingListItem", "id", itemId));
+
+        Ingredient ingredient = ingredientRepository.findById(itemDto.getIngredientId())
+                .orElseThrow(() -> new ResourceNotFoundException("Ingredient", "id", itemDto.getIngredientId()));
+
+        item.setIngredient(ingredient);
+        item.setQuantity(itemDto.getQuantity());
+        item.setUnit(itemDto.getUnit());
+
+        shoppingList.setUpdatedAt(LocalDateTime.now());
+        ShoppingList updatedList = shoppingListRepository.save(shoppingList);
+        return mapperUtil.mapShoppingListToDto(updatedList);
+    }
+
+    private void validateShoppingListItem(IngredientQuantityDto itemDto) {
+        if (itemDto.getIngredientId() == null) {
+            throw new IllegalArgumentException("Ingredient ID is required");
+        }
+        if (itemDto.getQuantity() == null || itemDto.getQuantity().isEmpty()) {
+            throw new IllegalArgumentException("Quantity is required");
+        }
+        if (itemDto.getUnit() == null || itemDto.getUnit().isEmpty()) {
+            throw new IllegalArgumentException("Unit is required");
+        }
+    }
 }

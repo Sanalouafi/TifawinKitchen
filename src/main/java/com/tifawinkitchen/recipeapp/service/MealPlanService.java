@@ -11,4 +11,6 @@ public interface MealPlanService {
     MealPlanDto createMealPlan(MealPlanDto mealPlanDto, Long userId) throws ResourceNotFoundException;
     MealPlanDto updateMealPlan(Long planId, MealPlanDto mealPlanDto, Long userId) throws ResourceNotFoundException;
     void deleteMealPlan(Long planId, Long userId) throws ResourceNotFoundException;
+    void addRecipesToMealPlan(Long planId, List<Long> recipeIds, Long userId) throws ResourceNotFoundException;
+    void removeRecipesFromMealPlan(Long planId, List<Long> recipeIds, Long userId) throws ResourceNotFoundException;
 }

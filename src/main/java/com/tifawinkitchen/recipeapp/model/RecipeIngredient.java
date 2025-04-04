@@ -1,9 +1,9 @@
 package com.tifawinkitchen.recipeapp.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+
+import java.util.Objects;
 
 @Entity
 @Table(name = "recipe_ingredients")
@@ -28,4 +28,20 @@ public class RecipeIngredient {
 
     @Column(nullable = false)
     private String unit;
+
+    // Ensure proper equals and hashCode implementation
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof RecipeIngredient)) return false;
+        RecipeIngredient that = (RecipeIngredient) o;
+        return Objects.equals(id, that.id) &&
+                Objects.equals(recipe, that.recipe) &&
+                Objects.equals(ingredient, that.ingredient);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, recipe, ingredient);
+    }
 }

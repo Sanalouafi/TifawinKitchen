@@ -1,20 +1,13 @@
 package com.tifawinkitchen.recipeapp.model;
 
-import com.tifawinkitchen.recipeapp.model.enums.DietType;
-import com.tifawinkitchen.recipeapp.model.enums.DishType;
-import com.tifawinkitchen.recipeapp.model.enums.RecipeComplexity;
+import com.tifawinkitchen.recipeapp.model.enums.*;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @Table(name = "recipes")
@@ -34,6 +27,7 @@ public class Recipe {
 
     @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<RecipeIngredient> recipeIngredients = new ArrayList<>();
+
     @ElementCollection
     @CollectionTable(name = "recipe_steps", joinColumns = @JoinColumn(name = "recipe_id"))
     @Column(name = "step", columnDefinition = "TEXT")
@@ -71,4 +65,35 @@ public class Recipe {
     @CollectionTable(name = "recipe_diet_types", joinColumns = @JoinColumn(name = "recipe_id"))
     @Enumerated(EnumType.STRING)
     private Set<DietType> dietTypes = new HashSet<>();
+
+    // Helper methods for managing bidirectional relationships
+    public void addRecipeIngredient(RecipeIngredient recipeIngredient) {
+        recipeIngredients.add(recipeIngredient);
+        recipeIngredient.setRecipe(this);
+    }
+
+    public void removeRecipeIngredient(RecipeIngredient recipeIngredient) {
+        recipeIngredients.remove(recipeIngredient);
+        recipeIngredient.setRecipe(null);
+    }
+
+    public void addComment(Comment comment) {
+        comments.add(comment);
+        comment.setRecipe(this);
+    }
+
+    public void removeComment(Comment comment) {
+        comments.remove(comment);
+        comment.setRecipe(null);
+    }
+
+    public void addRating(Rating rating) {
+        ratings.add(rating);
+        rating.setRecipe(this);
+    }
+
+    public void removeRating(Rating rating) {
+        ratings.remove(rating);
+        rating.setRecipe(null);
+    }
 }

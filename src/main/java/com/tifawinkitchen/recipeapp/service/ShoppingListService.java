@@ -1,5 +1,6 @@
 package com.tifawinkitchen.recipeapp.service;
 
+import com.tifawinkitchen.recipeapp.dto.IngredientQuantityDto;
 import com.tifawinkitchen.recipeapp.dto.ShoppingListDto;
 import com.tifawinkitchen.recipeapp.exception.ResourceNotFoundException;
 
@@ -13,4 +14,7 @@ public interface ShoppingListService {
     ShoppingListDto generateFromRecipes(Set<Long> recipeIds, String listName, Long userId) throws ResourceNotFoundException;
     ShoppingListDto updateShoppingList(Long listId, ShoppingListDto shoppingListDto, Long userId) throws ResourceNotFoundException;
     void deleteShoppingList(Long listId, Long userId) throws ResourceNotFoundException;
+    ShoppingListDto addItemToShoppingList(Long listId, IngredientQuantityDto itemDto, Long userId) throws ResourceNotFoundException;
+    ShoppingListDto removeItemFromShoppingList(Long listId, Long itemId, Long userId) throws ResourceNotFoundException;
+    ShoppingListDto updateShoppingListItem(Long listId, Long itemId, IngredientQuantityDto itemDto, Long userId) throws ResourceNotFoundException;
 }

@@ -1,5 +1,6 @@
 package com.tifawinkitchen.recipeapp.controller;
 
+import com.tifawinkitchen.recipeapp.dto.IngredientQuantityDto;
 import com.tifawinkitchen.recipeapp.dto.ShoppingListDto;
 import com.tifawinkitchen.recipeapp.service.ShoppingListService;
 import lombok.RequiredArgsConstructor;
@@ -61,6 +62,33 @@ public class ShoppingListController {
             @PathVariable Long listId,
             @RequestParam Long userId) {
         shoppingListService.deleteShoppingList(listId, userId);
+        return ResponseEntity.noContent().build();
+    }
+    @PostMapping("/{listId}/items")
+    public ResponseEntity<ShoppingListDto> addItemToShoppingList(
+            @PathVariable Long listId,
+            @RequestBody IngredientQuantityDto itemDto,
+            @RequestParam Long userId) {
+        ShoppingListDto updatedList = shoppingListService.addItemToShoppingList(listId, itemDto, userId);
+        return ResponseEntity.ok(updatedList);
+    }
+
+    @PutMapping("/{listId}/items/{itemId}")
+    public ResponseEntity<ShoppingListDto> updateShoppingListItem(
+            @PathVariable Long listId,
+            @PathVariable Long itemId,
+            @RequestBody IngredientQuantityDto itemDto,
+            @RequestParam Long userId) {
+        ShoppingListDto updatedList = shoppingListService.updateShoppingListItem(listId, itemId, itemDto, userId);
+        return ResponseEntity.ok(updatedList);
+    }
+
+    @DeleteMapping("/{listId}/items/{itemId}")
+    public ResponseEntity<Void> removeItemFromShoppingList(
+            @PathVariable Long listId,
+            @PathVariable Long itemId,
+            @RequestParam Long userId) {
+        shoppingListService.removeItemFromShoppingList(listId, itemId, userId);
         return ResponseEntity.noContent().build();
     }
 }
